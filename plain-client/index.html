@@ -1,0 +1,163 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>handsfree 3D plain client</title>
+  <style>
+    body {
+      margin: 0
+    }
+  </style>
+  <script src="three.js"></script>
+
+</head>
+
+<body>
+  <script>
+    // math helper functions
+    const getVertex = (startingPoint, xSpan, ySpan) => {
+      return {
+        x: startingPoint.x + ( xSpan / 2 ),
+        y: startingPoint.y + ySpan
+      };
+    };
+
+    const getQuadraticEquation = (startingPoint, vertex) => {
+      const { x: x0, y: y0 } = startingPoint;
+      const { x: xV, y: yV } = vertex;
+      const t = Math.sqrt(y0 - yV);
+      const d = x0 - xV
+      const a =  t /  d ; // https://www.youtube.com/watch?v=DHYPjhQNHIo&ab_channel=3Blue1Brown
+      return (currentX) => {
+        console.log({ a, x0, xV, yV})
+        return a * Math.pow(currentX - xV, 2) + yV;
+      };
+    };
+
+    const getInterpolator = (initialValue, range, steps, interpolationFunction) => {
+      const stepSize = range / steps;
+      const vals = new Array(steps).fill(null).map(
+        (_, i) => {
+          const x = initialValue + ( i * stepSize );
+          const y = interpolationFunction(x);
+          return { x, y };
+        }
+      );
+      return (frameNumber) => vals[frameNumber] || null;
+    };
+
+    const buildCuadraticInterpolator = (startingPoint, xRange, yRange, steps) => {
+      const vertex = getVertex(
+        startingPoint,
+        xRange,
+        yRange,
+      );
+
+      const interpolationFunction = getQuadraticEquation(startingPoint, vertex);
+      
+      return getInterpolator(startingPoint.x, xRange, steps, interpolationFunction);
+    };
+
+    const t = THREE;
+    // mesh constructors:
+    const createWheel = () => {
+      const boxGeometry = new t.BoxGeometry(12, 12, 33);
+      const material = new t.MeshLambertMaterial({ color: 0x333333 });
+      const wheel = new t.Mesh(boxGeometry, material);
+      return wheel;
+    };
+
+    const createCar = () => {
+      const car = new t.Group();
+      const backWheels = createWheel();
+      backWheels.position.x = -16;
+
+      car.add(backWheels);
+
+      const frontWheels = createWheel();
+      frontWheels.position.x = 16;
+      car.add(frontWheels);
+
+      const body = new t.Mesh(
+        new t.BoxGeometry(60, 15, 30),
+        new t.MeshLambertMaterial({ color: 0x78b14b }),
+      );
+      body.position.y = 12;
+
+      car.add(body);
+
+      const cabin = new t.Mesh(
+        new t.BoxGeometry(18, 12, 24),
+        new t.MeshLambertMaterial({ color: 0xffffff }),
+      );
+      cabin.position.y = 24;
+      cabin.position.x = 7;
+
+      car.add(cabin);
+
+      return car;
+    };
+
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    const cameraWidth = 320;
+    const cameraHeight = cameraWidth / aspectRatio;
+
+    const scene = new t.Scene();
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(200, 500, 300);
+    scene.add(directionalLight);
+
+    const camera = new t.OrthographicCamera(
+      cameraWidth / -2,
+      cameraWidth / 2,
+      cameraHeight / 2,
+      cameraHeight / -2,
+      0,
+      1000,
+    );
+
+    const renderer = new t.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementsByTagName('body')[0].appendChild(renderer.domElement);
+
+    camera.position.set(200, 200, 200);
+    camera.lookAt(60, 10, -60);
+
+    car = createCar();
+
+    scene.add(car);
+
+    // render:
+    renderer.render(scene, camera);
+
+    const animationFrames = 90; // ~ 1.5;
+
+    const startingPoint = { x: car.position.x, y: car.position.y };
+    console.log({startingPoint})
+
+    const getPositionFromFrame = buildCuadraticInterpolator(startingPoint, 170, -20, 90);
+
+    const animate = (currentFrame) => {
+      const newPosition = getPositionFromFrame(currentFrame);
+      if (newPosition) {
+        car.position.z = newPosition.y / 6;
+        car.position.x = newPosition.x;
+      }
+
+      car.rotation.y += 0.03;
+      renderer.render(scene, camera);
+
+      if (currentFrame < animationFrames) requestAnimationFrame(() => animate(currentFrame + 1));
+    };
+
+    animate(0);
+
+  </script>
+</body>
+
+</html>
