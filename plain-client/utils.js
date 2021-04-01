@@ -1,5 +1,4 @@
 
-
 const raycastIntersectedObjects = (scene, x, y) => {
   const proyectedPoint = new t.Vector2();
 
@@ -17,12 +16,20 @@ const raycastIntersectsMesh = (mesh, x, y) => {
   });
 };
 
-const mapScreenToBoard = (screenPoint, boardDimentions) => {
-  const abstractX = screenPoint.x / window.innerWidth * 2 - 1;
-  const abstractY = screenPoint.y / window.innerHeight * 2 - 1;
+const getBoardOriginFromDimensions = ({ width, height }) => {
   return {
-    x: abstractX * boardDimentions.width,
-    y: abstractY * boardDimentions.height,
+    x: 0 - width / 2,
+    z: 0 - height / 2,
+  };
+};
+
+const mapScreenToBoard = (screenPoint, boardDimentions) => {
+  const normalizedX = screenPoint.x / window.innerWidth;
+  const normalizedY = screenPoint.y / window.innerHeight;
+  const boardOrigin = getBoardOriginFromDimensions(boardDimentions);
+  return {
+    x: boardOrigin.x + (normalizedX * boardDimentions.width),
+    z: boardOrigin.z + (normalizedY * boardDimentions.height),
   };
 }
 

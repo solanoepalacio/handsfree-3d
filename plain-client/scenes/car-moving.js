@@ -16,13 +16,14 @@ const camera = new t.PerspectiveCamera(
     2000,
 );
 
-camera.position.set(700, 600, 550);
-camera.lookAt(60, 0, 60);
+camera.position.set(0, 600, 800);
+camera.lookAt(0, 10, 0);
 
-const floor = createFloor();
+const boardWith = 1280;
+const boardHeight = boardWith / aspectRatio;
+const floor = createFloor(boardWith, boardHeight);
 
 scene.add(floor);
-
 
 const car = createCar();
 
@@ -37,15 +38,9 @@ const maxX = 290;
 const minX = -276;
 
 car.position.y = 10;
-car.position.x = -276;
-car.position.z = -300;
-
-const virtualPosition = {
-  x: car.position.x,
-  y: car.position.y,
-  z: car.position.z,
-};
-
+car.position.x = 0;
+car.position.z = 0;
+car.rotation.y = -0.5;
 
 const updatePosition = (position, { x, y, z }) => {
   if (x) position.x = x;
@@ -66,12 +61,11 @@ debouncedListener('mousedown', (downEvent) => {
   downEvent.preventDefault();
   if (raycastIntersectsMesh(car, downEvent.clientX, downEvent.clientY)) {
     const unregister = debouncedListener('mousemove', (moveEvent) => {
-      const { x: mappedX, y: mappedY } = mapScreenToBoard(
+      const mappedPosition = mapScreenToBoard(
         { x: moveEvent.clientX, y: moveEvent.clientY },
-        { width: Math.abs(minX) + maxX, height: Math.abs(minZ) + maxZ },
+        { width: boardWith, height: boardHeight },
       );
-
-      updateCarPos({ x: mappedX, z: mappedY })
+      updateCarPos(mappedPosition)
     });
 
     debouncedListener('mouseup', () => {
