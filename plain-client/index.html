@@ -8,9 +8,14 @@
     body {
       margin: 0
     }
+
+    .handsfree-debugger {
+      display: none !important;
+    }
   </style>
-  <script src="https://unpkg.com/handsfree@8.4.0/build/lib/handsfree.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js"></script>
+  
+  
+
   <script src="libs/three.js"></script>
   <script src="utils.js"></script>
   <script src="state.js"></script>
@@ -39,11 +44,17 @@
     </div>
   </div>
 
+
+  <script src="https://unpkg.com/handsfree@8.4.0/build/lib/handsfree.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js"></script>
+  <script>
+    // global initialization
+    const aspectRatio = window.innerWidth / window.innerHeight;
+  </script>
+
   <script>
     // three js initilization
     const t = THREE;
-
-    const aspectRatio = window.innerWidth / window.innerHeight;
 
     const scene = new t.Scene();
     const raycaster = new t.Raycaster();
@@ -57,7 +68,7 @@
     // hands free initialization
     const handsfree = new window.Handsfree({
       hands: true,
-      maxNumHands: 1
+      maxNumHands: 2,
     });
 
     const videoCanvas = document.querySelector('#handsfree-video-feedback');
@@ -68,9 +79,13 @@
 
     videoCanvas.width = window.innerWidth / 4;
     videoCanvas.height = videoCanvas.width / aspectRatio;
+    videoCanvas.style.transform = 'scale(-1, 1)';
+
     videoCanvasContext.fillStyle = "#282c34";
 
     videoCanvasContext.fillRect(0, 0, videoCanvas.width, videoCanvas.height);
+
+    handsfree.start();
   </script>
 
   <!-- MESHES -->
@@ -89,8 +104,7 @@
   const tick = () => {
     liftAnimation();
     scaleAnimation();
-    // handsfree.start();
-    // if (state.videoRunning) updateVideo();
+    if (state.videoRunning) updateVideo();
 
     threeJsRenderer.render(scene, camera);
     requestAnimationFrame(() => tick());
