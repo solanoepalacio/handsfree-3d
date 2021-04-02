@@ -2,6 +2,7 @@
 let state = {
     hoveringCar: false,
     draggingCar: false,
+    videoRunning: true,
 };
 
 const stateKeys = Object.keys(state);

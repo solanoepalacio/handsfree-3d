@@ -7,11 +7,15 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
 scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-directionalLight.position.set(200, 500, 300);
+directionalLight.position.set(-200, 500, 150);
 scene.add(directionalLight);
 
+// const pointLight = new THREE.PointLight(0xffffff, 0.7);
+// pointLight.position.set(0, 70, 0);
+// scene.add(pointLight);
+
 const camera = new t.PerspectiveCamera(
-  45,
+  40,
   window.innerWidth / window.innerHeight,
   0.1,
   2000,
@@ -154,14 +158,3 @@ const scaleAnimation = () => {
     lockedAnimation('scale-down', car, 'scale', 0.4, { x: 1, y: 1, z: 1 });
 };
 
-// render:
-
-const animate = () => {
-  liftAnimation();
-  scaleAnimation();
-
-  renderer.render(scene, camera);
-  requestAnimationFrame(() => animate());
-};
-
-animate();

@@ -71,7 +71,7 @@ car = createCar();
 scene.add(car);
 
 // render:
-renderer.render(scene, camera);
+threeJsRenderer.render(scene, camera);
 
 const animationFrames = 90; // ~ 1.5;
 
@@ -87,7 +87,7 @@ const animate = (currentFrame) => {
   }
 
   car.rotation.y += 0.03;
-  renderer.render(scene, camera);
+  threeJsRenderer.render(scene, camera);
 
   if (currentFrame < animationFrames) requestAnimationFrame(() => animate(currentFrame + 1));
 };
