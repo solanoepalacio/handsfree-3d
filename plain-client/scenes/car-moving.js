@@ -1,3 +1,4 @@
+// initial setup:
 
 const cameraWidth = 720;
 const cameraHeight = cameraWidth / aspectRatio;
@@ -10,10 +11,10 @@ directionalLight.position.set(200, 500, 300);
 scene.add(directionalLight);
 
 const camera = new t.PerspectiveCamera(
-    35,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    2000,
+  45,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  2000,
 );
 
 camera.position.set(0, 600, 800);
@@ -42,45 +43,125 @@ car.position.x = 0;
 car.position.z = 0;
 car.rotation.y = -0.5;
 
-const updatePosition = (position, { x, y, z }) => {
-  if (x) position.x = x;
-  if (y) position.y = y;
-  if (z) position.z = z;
+const update3dPoint = (point, { x, y, z }) => {
+  if (x) point.x = x;
+  if (y) point.y = y;
+  if (z) point.z = z;
 };
 
-const updateCarPos = (newPos) => updatePosition(car.position, newPos);
+const updateCarPos = (newPos) => update3dPoint(car.position, newPos);
 
 const carMovementSpeed = {
   x: 10,
   z: 10,
 };
 
-// controls
+const carInitialPosition = Object.assign({}, car.position);
 
-debouncedListener('mousedown', (downEvent) => {
-  downEvent.preventDefault();
-  if (raycastIntersectsMesh(car, downEvent.clientX, downEvent.clientY)) {
-    const unregister = debouncedListener('mousemove', (moveEvent) => {
-      const mappedPosition = mapScreenToBoard(
-        { x: moveEvent.clientX, y: moveEvent.clientY },
-        { width: boardWith, height: boardHeight },
-      );
-      updateCarPos(mappedPosition)
-    });
+// controllers:
 
-    debouncedListener('mouseup', () => {
-      unregister();
-    });
+debouncedListener('mousedown', (e) => {
+  e.preventDefault();
+
+  if (raycastIntersectsMesh(car, e.clientX, e.clientY)) {
+    updateState({ draggingCar: true });
   }
 });
 
-// render:
-renderer.render(scene, camera);
+debouncedListener('mouseup', () => {
+  if (getState().draggingCar) updateState({ draggingCar: false });
+});
 
-const animate = (currentFrame) => {
-  renderer.render(scene, camera);
-  
-  requestAnimationFrame(() => animate(currentFrame + 1));
+debouncedListener('mousemove', (e) => {
+  if (state.draggingCar) {
+    const mappedPosition = mapScreenToBoard(
+      { x: e.clientX, y: e.clientY },
+      { width: boardWith, height: boardHeight },
+    );
+
+    updateCarPos(mappedPosition);
+  }
+
+  else if (raycastIntersectsMesh(car, e.clientX, e.clientY)) {
+    !state.hoveringCar && updateState({ hoveringCar: true });
+  }
+
+  else updateState({ hoveringCar: false });
+});
+
+// animations: 
+
+let animationTimelines = {};
+
+const addTimeline = () => {
+  const timeline = new TimelineMax();
+  const timelineId = `${Date.now()}`;
+
+  animationTimelines[timelineId] = timeline;
+
+  const removeTimeline = () => {
+    delete animationTimelines[timelineId];
+  };
+
+  return [timeline, removeTimeline];
+}
+
+const animateMeshChange = (mesh, propName, duration, params, callback) => {
+  const [timeline, cleanup] = addTimeline();
+  params.onComplete = () => {
+    cleanup();
+    callback();
+  };
+
+  timeline.to(mesh[propName], duration, params);
 };
 
-animate(0);
+const animationLocks = {};
+
+const getAnimationLocks = (name) => {
+  let locks = animationLocks[name] || {};
+  if (!animationLocks[name]) {
+    animationLocks[name] = locks;
+  }
+
+  return locks;
+};
+
+const lockedAnimation = (lockId, mesh, propName, duration, params) => {
+  const locks = getAnimationLocks(lockId);
+  if (!locks[mesh.uuid]) {
+    locks[mesh.uuid] = true;
+    animateMeshChange(mesh, propName, duration, params, () => {
+      delete locks[mesh.uuid];
+    });
+  }
+};
+
+const liftAnimation = () => {
+  if (state.draggingCar)
+    lockedAnimation('animate-up', car, 'position', 1, { y: 50, ease: Expo.easeOut });
+  
+  if (!state.draggingCar && car.position.y !== carInitialPosition.y)
+    lockedAnimation('animate-down', car, 'position', 1, { y: 10, ease: Expo.easeOut });
+};
+
+const scaleAnimation = () => {
+  if (state.hoveringCar)
+    lockedAnimation('scale-up', car, 'scale', 0.4, { x: 1.25, y: 1.25, z: 1.25 })
+  
+
+  else if (car.scale.x > 1)
+    lockedAnimation('scale-down', car, 'scale', 0.4, { x: 1, y: 1, z: 1 });
+};
+
+// render:
+
+const animate = () => {
+  liftAnimation();
+  scaleAnimation();
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(() => animate());
+};
+
+animate();

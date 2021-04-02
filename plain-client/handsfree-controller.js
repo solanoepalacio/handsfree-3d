@@ -1,0 +1,1 @@
+console.log('domElement', renderer.domElement);
