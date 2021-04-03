@@ -48,7 +48,7 @@ car.position.z = 0;
 car.rotation.y = -0.5;
 
 const update3dPoint = (point, { x, y, z }) => {
-  if (x) point.x = x;
+  if (x) point.x = -x;
   if (y) point.y = y;
   if (z) point.z = z;
 };
@@ -92,6 +92,29 @@ debouncedListener('mousemove', (e) => {
 
   else updateState({ hoveringCar: false });
 });
+
+const update3dScene = (thumb, index, isPinched) => {
+  const thumbIntersects = thumb ? raycastIntersectsMesh(car, thumb.x * window.innerWidth, thumb.y * window.innerHeight) : null;
+  const indexIntersects = index ? raycastIntersectsMesh(car, index.x * window.innerWidth, index.y * window.innerHeight) : null;
+  updateState({ hoveringCar: thumbIntersects || indexIntersects || false });
+
+  updateState({ draggingCar: isPinched });
+
+  if (isPinched) {
+    const pinchPosition = { x: index.x * window.innerWidth, y: index.y * window.innerHeight };
+    console.log({ pinchPosition })
+    const mappedPosition = mapScreenToBoard(
+      { x: pinchPosition.x, y: pinchPosition.y },
+      { width: boardWith, height: boardHeight },
+    );
+
+    updateCarPos(mappedPosition);
+  }
+
+
+  liftAnimation();
+  scaleAnimation();
+};
 
 // animations: 
 
@@ -145,7 +168,7 @@ const liftAnimation = () => {
   if (state.draggingCar)
     lockedAnimation('animate-up', car, 'position', 1, { y: 50, ease: Expo.easeOut });
   
-  if (!state.draggingCar && car.position.y !== carInitialPosition.y)
+  if (!state.draggingCar && car.position.y !== carInitialPosition.y) // TODO: get rid of this ugly dependendency
     lockedAnimation('animate-down', car, 'position', 1, { y: 10, ease: Expo.easeOut });
 };
 

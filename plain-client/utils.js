@@ -1,7 +1,6 @@
 
 const raycastIntersectedObjects = (scene, x, y) => {
   const proyectedPoint = new t.Vector2();
-
   proyectedPoint.x = 2 * ( x / window.innerWidth ) - 1;
   proyectedPoint.y = 1 - 2 * ( y / window.innerHeight );
   raycaster.setFromCamera(proyectedPoint, camera);

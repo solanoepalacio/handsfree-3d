@@ -2,17 +2,22 @@ const HAND_CONNECTIONS = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7]
 
 const getHandLandmarks = () => handsfree.data.hands && handsfree.data.hands.landmarks || [];
 
-const drawLandmark = ({ x, y }, canvasContext, color = 'red') => {
+const defaultLandmarkStyle = {
+  color: 'red',
+  size: 3,
+};
+
+const drawLandmark = ({ x, y }, canvasContext, { color, size } = defaultLandmarkStyle) => {
   canvasContext.fillStyle = color;
-  canvasContext.fillRect(x, y, 3, 3);
+  canvasContext.fillRect(x, y, size, size);
 };
 
 const drawLine = (canvasContext, { x: x0, y: y0 }, { x: xf, y: yf }, color = 'green') => {
-  canvasContext.beginPath();
   canvasContext.strokeStyle = color;
   canvasContext.lineWidth = 1.5;
   canvasContext.lineCap = 'round';
   
+  canvasContext.beginPath();
 
   canvasContext.moveTo(x0, y0);
   canvasContext.lineTo(xf, yf);
@@ -24,7 +29,6 @@ const drawLine = (canvasContext, { x: x0, y: y0 }, { x: xf, y: yf }, color = 'gr
 const drawAllLandmarks = (handLandmarks, canvasContext, canvasSize) => {
   const { width, height } = canvasSize;
   handLandmarks.forEach(({ x, y }) => {
-
     drawLandmark({ x: x * width, y: y * height }, canvasContext);
   });
 };
@@ -45,9 +49,32 @@ const drawAllConnectors = (handLandmarks, canvasContext, canvasSize) => {
   });
 };
 
+const getIndexPinch = () => {
+  const pinchState = handsfree.data.hands &&
+    handsfree.data.hands.pinchState ||
+    null;
 
-const updateVideo = () => {
-  // console.log('updateing video', handsfree.debug.$video);
+  if (!pinchState) return null;
+  const [_, rightHandPinches] = pinchState;
+  
+  return rightHandPinches[0] === 'held';
+}
+const getPinchFingers = () => {
+  const rightHand = getRightHand();
+  if (rightHand) {
+    const pinch = getIndexPinch();
+    return [ rightHand[4], rightHand[8], pinch ];
+  }
+
+  else return [ null, null, null ];
+};
+
+const getRightHand = () => {
+  const landmarks = getHandLandmarks();
+  return landmarks.length ? landmarks[1] : null;
+};
+
+const updateHands = () => {
   if (!handsfree.debug.$video) return;
 
   videoCanvasContext.drawImage(
@@ -58,33 +85,15 @@ const updateVideo = () => {
     videoCanvas.height,
   );
 
-  const landmarks = getHandLandmarks();
-  const rightHand = landmarks[1];
+  
+  const rightHand = getRightHand();
+  
 
   rightHand && drawAllLandmarks(rightHand, videoCanvasContext, videoCanvas);
   rightHand && drawAllConnectors(rightHand, videoCanvasContext, videoCanvas);
 
-};
-
-// const drawRightIndex = () => {
-//   let landmark;
-//   if (landmarks && landmarks.length) {
-//     const rightHand = landmarks[1];
-//     if (rightHand.length) {
-//       landmark = rightHand[8];
-//     }
-//   };
-
-//   if (landmark) {
-//     const currentLandmark = {
-//       x: landmark.x * canvasRef.current.width,
-//       y: landmark.y * canvasRef.current.height
-//     };
-
-//     drawLandmark(currentLandmark, canvasContext);
-//   }
-// }
-
-const updateHandsfreeCanvas = () => {
+  drawingCanvasContext.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+  rightHand && drawAllLandmarks(rightHand, drawingCanvasContext, drawingCanvas);
+  rightHand && drawAllConnectors(rightHand, drawingCanvasContext, drawingCanvas);
 
 };

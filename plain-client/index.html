@@ -24,6 +24,9 @@
       position: fixed;
       top: 0;
       left: 0;
+    }
+
+    #app-root {
       width: 100vw;
       height: 100vh;
     }
@@ -72,10 +75,13 @@
     });
 
     const videoCanvas = document.querySelector('#handsfree-video-feedback');
-    const handsfreeCanvas = document.querySelector('#handsfree-drawing-canvas');
+    const drawingCanvas = document.querySelector('#handsfree-drawing-canvas');
+    drawingCanvas.width = window.innerWidth;
+    drawingCanvas.height = window.innerHeight;
+    drawingCanvas.style.transform = 'scale(-1, 1)';
 
     const videoCanvasContext = videoCanvas.getContext('2d');
-    const handsfreeCanvasContext = handsfreeCanvas.getContext('2d');
+    const drawingCanvasContext = drawingCanvas.getContext('2d');
 
     videoCanvas.width = window.innerWidth / 4;
     videoCanvas.height = videoCanvas.width / aspectRatio;
@@ -102,9 +108,10 @@
   <script>
   // render:
   const tick = () => {
-    liftAnimation();
-    scaleAnimation();
-    if (state.videoRunning) updateVideo();
+    if (state.videoRunning) updateHands();
+    const [ rightThumb, rightIndex, isPinched ] = getPinchFingers();
+
+    update3dScene(rightThumb, rightIndex, isPinched);
 
     threeJsRenderer.render(scene, camera);
     requestAnimationFrame(() => tick());
@@ -112,6 +119,7 @@
 
   tick();
   </script>
+  
 </body>
 
 </html>
