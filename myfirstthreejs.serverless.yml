@@ -1,10 +1,10 @@
-service: handsfree-3d-prototype
+service: myfirstthreejs
 
 custom:
   # serverless-offline:
   #   host: 0.0.0.0
   #   httpPort: 4000
-  UI_BUCKET_NAME: "solano.be-handsfree-3d-prototype-ui-bucket"
+  UI_BUCKET_NAME: "solano.be-myfirstthreejs-ui-bucket"
 
 # plugins:
 #   - serverless-offline
@@ -64,7 +64,7 @@ resources:
           HttpVersion: "http2"
           DefaultRootObject: index.html
           Aliases:
-            - handsfree-3d-prototype.solano.be
+            - myfirstthreejs.solano.be
           DefaultCacheBehavior:
             AllowedMethods:
               - GET
@@ -85,13 +85,13 @@ resources:
       Type: AWS::Route53::RecordSet
       Properties:
         HostedZoneName: solano.be.
-        Name: handsfree-3d-prototype.solano.be
+        Name: myfirstthreejs.solano.be
         Region: "us-east-1"
         Type: A
         AliasTarget:
           HostedZoneId: "Z2FDTNDATAQYW2"
           DNSName: !GetAtt [UICloudfront, DomainName]
-        SetIdentifier: handsfree-3d-prototype
+        SetIdentifier: myfirstthreejs
 
 package:
   individually: true

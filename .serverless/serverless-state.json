@@ -1,8 +1,8 @@
 {
   "service": {
-    "service": "myfirstthreejs",
+    "service": "handsfree-3d-prototype",
     "serviceObject": {
-      "name": "myfirstthreejs"
+      "name": "handsfree-3d-prototype"
     },
     "provider": {
       "name": "aws",
@@ -11,7 +11,7 @@
       "runtime": "nodejs10.x",
       "memorySize": 128,
       "environment": {
-        "UI_BUCKET_NAME": "solano.be-myfirstthreejs-ui-bucket"
+        "UI_BUCKET_NAME": "solano.be-handsfree-3d-prototype-ui-bucket"
       },
       "stage": "dev",
       "variableSyntax": "\\${([^{}:]+?(?:\\(|:)(?:[^:{}][^{}]*?)?)}",
@@ -92,7 +92,7 @@
           "UIBucket": {
             "Type": "AWS::S3::Bucket",
             "Properties": {
-              "BucketName": "solano.be-myfirstthreejs-ui-bucket",
+              "BucketName": "solano.be-handsfree-3d-prototype-ui-bucket",
               "AccessControl": "PublicRead",
               "WebsiteConfiguration": {
                 "IndexDocument": "index.html",
@@ -169,7 +169,7 @@
                 "HttpVersion": "http2",
                 "DefaultRootObject": "index.html",
                 "Aliases": [
-                  "myfirstthreejs.solano.be"
+                  "handsfree-3d-prototype.solano.be"
                 ],
                 "DefaultCacheBehavior": {
                   "AllowedMethods": [
@@ -198,7 +198,7 @@
             "Type": "AWS::Route53::RecordSet",
             "Properties": {
               "HostedZoneName": "solano.be.",
-              "Name": "myfirstthreejs.solano.be",
+              "Name": "handsfree-3d-prototype.solano.be",
               "Region": "us-east-1",
               "Type": "A",
               "AliasTarget": {
@@ -210,7 +210,7 @@
                   ]
                 }
               },
-              "SetIdentifier": "myfirstthreejs"
+              "SetIdentifier": "handsfree-3d-prototype"
             }
           }
         },
@@ -306,7 +306,7 @@
       }
     },
     "custom": {
-      "UI_BUCKET_NAME": "solano.be-myfirstthreejs-ui-bucket"
+      "UI_BUCKET_NAME": "solano.be-handsfree-3d-prototype-ui-bucket"
     },
     "pluginsData": {},
     "functions": {},
@@ -315,7 +315,7 @@
         "UIBucket": {
           "Type": "AWS::S3::Bucket",
           "Properties": {
-            "BucketName": "solano.be-myfirstthreejs-ui-bucket",
+            "BucketName": "solano.be-handsfree-3d-prototype-ui-bucket",
             "AccessControl": "PublicRead",
             "WebsiteConfiguration": {
               "IndexDocument": "index.html",
@@ -392,7 +392,7 @@
               "HttpVersion": "http2",
               "DefaultRootObject": "index.html",
               "Aliases": [
-                "myfirstthreejs.solano.be"
+                "handsfree-3d-prototype.solano.be"
               ],
               "DefaultCacheBehavior": {
                 "AllowedMethods": [
@@ -421,7 +421,7 @@
           "Type": "AWS::Route53::RecordSet",
           "Properties": {
             "HostedZoneName": "solano.be.",
-            "Name": "myfirstthreejs.solano.be",
+            "Name": "handsfree-3d-prototype.solano.be",
             "Region": "us-east-1",
             "Type": "A",
             "AliasTarget": {
@@ -433,7 +433,7 @@
                 ]
               }
             },
-            "SetIdentifier": "myfirstthreejs"
+            "SetIdentifier": "handsfree-3d-prototype"
           }
         }
       },
@@ -461,14 +461,14 @@
         "exclude": [
           "./**"
         ],
-        "artifactDirectoryName": "serverless/myfirstthreejs/dev/1617159228489-2021-03-31T02:53:48.489Z"
+        "artifactDirectoryName": "serverless/handsfree-3d-prototype/dev/1618880929359-2021-04-20T01:08:49.359Z"
       }
     },
     "isDashboardMonitoringPreconfigured": false
   },
   "package": {
     "individually": true,
-    "artifactDirectoryName": "serverless/myfirstthreejs/dev/1617159228489-2021-03-31T02:53:48.489Z",
+    "artifactDirectoryName": "serverless/handsfree-3d-prototype/dev/1618880929359-2021-04-20T01:08:49.359Z",
     "artifact": ""
   }
 }

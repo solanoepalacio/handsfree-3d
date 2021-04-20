@@ -74,7 +74,7 @@
     "UIBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": "solano.be-myfirstthreejs-ui-bucket",
+        "BucketName": "solano.be-handsfree-3d-prototype-ui-bucket",
         "AccessControl": "PublicRead",
         "WebsiteConfiguration": {
           "IndexDocument": "index.html",
@@ -151,7 +151,7 @@
           "HttpVersion": "http2",
           "DefaultRootObject": "index.html",
           "Aliases": [
-            "myfirstthreejs.solano.be"
+            "handsfree-3d-prototype.solano.be"
           ],
           "DefaultCacheBehavior": {
             "AllowedMethods": [
@@ -180,7 +180,7 @@
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
         "HostedZoneName": "solano.be.",
-        "Name": "myfirstthreejs.solano.be",
+        "Name": "handsfree-3d-prototype.solano.be",
         "Region": "us-east-1",
         "Type": "A",
         "AliasTarget": {
@@ -192,7 +192,7 @@
             ]
           }
         },
-        "SetIdentifier": "myfirstthreejs"
+        "SetIdentifier": "handsfree-3d-prototype"
       }
     }
   },
