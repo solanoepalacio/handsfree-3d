@@ -59,6 +59,7 @@ const getIndexPinch = () => {
   
   return rightHandPinches[0] === 'held';
 }
+
 const getPinchFingers = () => {
   const rightHand = getRightHand();
   if (rightHand) {
